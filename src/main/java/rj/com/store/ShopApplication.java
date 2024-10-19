@@ -28,13 +28,13 @@ public class ShopApplication implements CommandLineRunner  {
 	private UserRepositories userRepositories;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	@Value("admin.email")
+	@Value("${admin.email}")
 	private String adminEmail;
-	@Value("admin.password")
+	@Value("${admin.password}")
 	private String adminPassword;
-	@Value("admin.name")
+	@Value("${admin.name}")
 	private String adminName;
-	@Value("admin.image")
+	@Value("${admin.image}")
 	private String adminImage;
 	@Override
 	public void run(String... args) {

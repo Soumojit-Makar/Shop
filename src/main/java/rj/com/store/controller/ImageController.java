@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import rj.com.store.datatransferobjects.ApiResponseMessage;
 import rj.com.store.datatransferobjects.ImageRequest;
 import rj.com.store.datatransferobjects.ImageResponse;
 import rj.com.store.services.ImageServiceInCloud;
@@ -60,5 +58,9 @@ public class ImageController {
                 .httpStatus(HttpStatus.CREATED)
                 .build(),
                 HttpStatus.CREATED);
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 }

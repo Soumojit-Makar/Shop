@@ -4,13 +4,12 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import rj.com.store.exceptions.BadApiRequest;
 import rj.com.store.services.ImageServiceInCloud;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 
@@ -98,7 +97,7 @@ public class ImageServiceInCloudImp implements ImageServiceInCloud {
             ));
             return "Image Successfully deleted";
         } catch (Exception e) {
-            throw new RuntimeException("Image Not Deleted");
+            throw new BadApiRequest("Image Not Deleted");
         }
     }
 

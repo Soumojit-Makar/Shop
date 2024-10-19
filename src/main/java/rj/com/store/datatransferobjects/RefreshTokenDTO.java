@@ -1,6 +1,5 @@
 package rj.com.store.datatransferobjects;
 
-import jakarta.persistence.OneToOne;
 import lombok.*;
 
 import java.time.Instant;
@@ -11,6 +10,6 @@ import java.time.Instant;
 @Builder
 public class RefreshTokenDTO {
         private int id;
-        private String token;
+        private String refreshTokenHold;
         private Instant expiresDate;
 }

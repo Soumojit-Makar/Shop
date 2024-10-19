@@ -39,16 +39,7 @@ services:
       MYSQL_DB: shop
 
       PMA_PASSWORD: root
-      CLOUDINARY_NAME: dfikzvebd
-      CLOUDINARY_API_KEY: 962894589259466
-      CLOUDINARY_API_SECRET: E0ehrXiTYpvumPMZ3v-79w4MJBk
-      GOOGLE_CLIENT_ID: 794180050459-gjfu268pak1ft16tt3pumrbjd5a6deak.apps.googleusercontent.com
-      GOOGLE_PASSWORD: ygygegfvucvyqevefqwvevwvwuyfeqfvwqufevqwvuvfqwvcifv
-      ADMIN_NAME: soumojit_makar
-      ADMIN_EMAIL: admin@gmail.com
-      ADMIN_PASSWORD: soumojitmakar
-      ADMIN_IMAGE: https://res-console.cloudinary.com/dfikzvebd/media_explorer_thumbnails/8b0789a5b6b0a31d118be5dd0e62e62a/detailed
-    ports:
+      ports:
       - "9090:9090"
     depends_on:
       - mysql

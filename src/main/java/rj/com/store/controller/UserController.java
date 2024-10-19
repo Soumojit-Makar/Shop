@@ -8,9 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdoc.core.converters.SchemaPropertyDeprecatingConverter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,20 +32,16 @@ import java.io.IOException;
 @SecurityRequirement(name = "scheme")
 @Tag(name = "Users Controller", description = "This is user API for user operations")
 public class UserController {
-    private final EndpointMediaTypes endpointMediaTypes;
-    private final SchemaPropertyDeprecatingConverter schemaPropertyDeprecatingConverter;
-    private Logger logger= LoggerFactory.getLogger(UserController.class);
+    private final Logger logger= LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final FileService fileService;
     @Value("${user.profile.image.path}")
     private String imageUploadPath;
     @Enumerated(EnumType.STRING)
     Providers provider= Providers.SELF;
-    public UserController(UserService userService, FileService fileService, EndpointMediaTypes endpointMediaTypes, EndpointMediaTypes hendpointMediaTypes, SchemaPropertyDeprecatingConverter schemaPropertyDeprecatingConverter) {
+    public UserController(UserService userService, FileService fileService) {
         this.userService = userService;
         this.fileService=fileService;
-        this.endpointMediaTypes = endpointMediaTypes;
-        this.schemaPropertyDeprecatingConverter = schemaPropertyDeprecatingConverter;
     }
     /**
      * Create a new user.
@@ -58,7 +52,7 @@ public class UserController {
     @Operation(summary = "create new user")
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
         userDTO.setProvider(provider);
-        UserDTO user = userService.createUser(userDTO);
+        UserDTO user=userService.createUser(userDTO);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
     /**

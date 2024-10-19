@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.TableGenerator;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +56,7 @@ public class AuthenticationController {
     private final UserService userService;
     private final RefreshTokenService refreshTokenService;
     @Enumerated(EnumType.STRING)
-    private final Providers provider=Providers.GOOGLE;
+    private static final Providers provider=Providers.GOOGLE;
     /**
      * Constructs an instance of {@link AuthenticationController} with the specified dependencies.
      *
@@ -93,8 +92,6 @@ public class AuthenticationController {
     @PostMapping("/generate-token")
     @Operation(summary = "Generate Token by JWTRequest")
     public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest jwtRequest) {
-//
-//        logger.info("Username {}, Password {}", jwtRequest.getEmail(), jwtRequest.getPassword());
         this.doAuthenticate(jwtRequest.getEmail(),jwtRequest.getPassword());
         User user = (User) this.userDetailsService.loadUserByUsername(jwtRequest.getEmail());
         String token = jwtHelper.generateToken(user);
@@ -103,7 +100,7 @@ public class AuthenticationController {
                 JWTResponse
                         .builder()
                         .refreshToken(refreshTokenDTO)
-                        .token(token)
+                        .jwtToken(token)
                         .user(modelMapper.map(user, UserDTO.class))
                         .build());
     }
@@ -126,7 +123,7 @@ public class AuthenticationController {
         RefreshTokenDTO refreshTokenDTO1=refreshTokenService.verifyRefreshToken(refreshTokenDTO);
         UserDTO userDTO= refreshTokenService.getUserByToken(refreshTokenDTO1);
         String jwtToken= jwtHelper.generateToken(modelMapper.map(userDTO,User.class));
-        return ResponseEntity.ok(JWTResponse.builder().token(jwtToken)
+        return ResponseEntity.ok(JWTResponse.builder().jwtToken(jwtToken)
                 .user(userDTO)
                 .refreshToken(refreshTokenDTO)
                 .build());
@@ -173,7 +170,7 @@ public class AuthenticationController {
                 user= userService.createUser(userDTO);
             }
             logger.info("Email {}, Password {}",user.getEmail(),user.getPassword());
-//            this.doAuthenticate(user.getEmail(),user.getPassword());
+
             User userAuth=(User) this.userDetailsService.loadUserByUsername(user.getEmail());
             String authToken = jwtHelper.generateToken(userAuth);
             RefreshTokenDTO refreshTokenDTO= refreshTokenService.createRefreshToken(userAuth.getEmail());
@@ -181,7 +178,7 @@ public class AuthenticationController {
                     JWTResponse
                             .builder()
                             .refreshToken(refreshTokenDTO)
-                            .token(authToken)
+                            .jwtToken(authToken)
                             .user(user)
                             .build());
         }else {

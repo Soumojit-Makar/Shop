@@ -35,67 +35,55 @@ public class SecurityConfig  {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.csrf(AbstractHttpConfigurer::disable);
-//        http.cors(httpSecurityCorsConfigurer ->
-//                httpSecurityCorsConfigurer.configurationSource(request -> {
-//                    CorsConfiguration config = new CorsConfiguration();
-//                    config.setAllowedOriginPatterns(List.of("http://localhost:4200"));
-//                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//                    config.setAllowCredentials(true);
-//                    config.setAllowedHeaders(List.of("*"));
-//                    config.setMaxAge(3600L);
-//                    return config;
-//                })
-//                );
+        http.cors(httpSecurityCorsConfigurer ->
+                httpSecurityCorsConfigurer.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOriginPatterns(List.of("http://localhost:3000","http://localhost:9090"));
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    config.setAllowCredentials(true);
+                    config.setAllowedHeaders(List.of("*"));
+                    config.setMaxAge(3600L);
+                    return config;
+                })
+                );
         //Configuration
         http.authorizeHttpRequests(
                 //configuration URL
                 requests ->{
-                    requests.requestMatchers(
-                            "/swagger-ui/index.html",
-                            "/swagger-ui/**",
-                            "/v3/api-docs/**",
-                            "v2/api-docs/**",
-                            "/swagger-resources/**",
-                            "webjars/**"
-                    ).permitAll();
+
                     //User URL Configuration
-                    requests.requestMatchers(HttpMethod.DELETE,"/users/**")
+                    final String userCommonLink= "/users/**";
+                    requests.requestMatchers(HttpMethod.DELETE,userCommonLink)
                             .hasAnyRole(AppCon.ROLE_ADMIN,AppCon.ROLE_NORMAL)
-                            .requestMatchers(HttpMethod.PUT,"/users/**")
+                            .requestMatchers(HttpMethod.GET,"users/v1")
+                            .hasRole(AppCon.ROLE_ADMIN)
+                            .requestMatchers(HttpMethod.PUT,userCommonLink)
                             .hasAnyRole(AppCon.ROLE_ADMIN,AppCon.ROLE_NORMAL)
-                            .requestMatchers(HttpMethod.GET,"/users/**")
-                            .permitAll()
-                            .requestMatchers(HttpMethod.POST,"/users/**")
-                            .permitAll();
-                    //Production URL Configuration
-                    requests.requestMatchers(HttpMethod.GET,"/products/**")
+                            .requestMatchers(HttpMethod.GET,"/products/**")
                             .permitAll()
                             .requestMatchers("/products/**")
-                            .hasRole(AppCon.ROLE_ADMIN);
-                    //Categories URL Configuration
-                    requests.requestMatchers(HttpMethod.GET,"/categories/**")
-                            .permitAll()
+                            .hasRole(AppCon.ROLE_ADMIN)
                             .requestMatchers("/categories/**")
-                            .hasRole(AppCon.ROLE_ADMIN);
-                    //Authentication URL Configuration
-                    requests.requestMatchers("/auth/**")
-                            .permitAll();
-                    //Cart URL Configuration
-                    requests.requestMatchers("carts/**")
-                            .hasAnyRole(AppCon.ROLE_NORMAL,AppCon.ROLE_ADMIN);
-                    //Order URL Configuration
-                    requests.requestMatchers(HttpMethod.POST,"orders/v1/create/user/")
+                            .hasRole(AppCon.ROLE_ADMIN)
+                            .requestMatchers(HttpMethod.POST,"orders/v1/create/user/")
                             .hasAnyRole(AppCon.ROLE_ADMIN,AppCon.ROLE_NORMAL)
                             .requestMatchers(HttpMethod.PUT,"orders/v1/update/")
                             .hasAnyRole(AppCon.ROLE_ADMIN,AppCon.ROLE_NORMAL)
                             .requestMatchers(HttpMethod.DELETE,"orders/**")
-                            .hasRole(AppCon.ROLE_ADMIN);
+                            .hasRole(AppCon.ROLE_ADMIN)
+                            .requestMatchers("carts/**")
+                            .hasAnyRole(AppCon.ROLE_NORMAL,AppCon.ROLE_ADMIN)
+                            .requestMatchers(HttpMethod.GET,userCommonLink)
+                            .permitAll()
+                            .requestMatchers(HttpMethod.POST,"/users/**")
+                            .permitAll()
+                            .requestMatchers(HttpMethod.GET,"/categories/**")
+                            .permitAll()
+                            .anyRequest().permitAll();
 
                 }
         );
-        //Type of Security used
-//        http.httpBasic(Customizer.withDefaults());
-        //entry point
+
 
         http.exceptionHandling(exception ->
             exception.authenticationEntryPoint(authenticationEntryPoint)

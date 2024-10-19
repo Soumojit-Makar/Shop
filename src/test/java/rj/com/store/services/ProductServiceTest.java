@@ -58,15 +58,10 @@ class ProductServiceTest {
 
     @Test
     void testCreateProduct() {
-        // Arrange
         when(mapper.map(any(ProductDTO.class), eq(Product.class))).thenReturn(product);
         when(productRepository.save(any(Product.class))).thenReturn(product);
         when(mapper.map(any(Product.class), eq(ProductDTO.class))).thenReturn(productDTO);
-
-        // Act
         ProductDTO createdProduct = productService.createProduct(productDTO);
-
-        // Assert
         assertNotNull(createdProduct);
         assertEquals(productDTO.getProductId(), createdProduct.getProductId());
         assertEquals(productDTO.getTitle(), createdProduct.getTitle());
@@ -75,27 +70,17 @@ class ProductServiceTest {
 
     @Test
     void testDeleteProduct() {
-        // Arrange
         when(productRepository.findById(anyString())).thenReturn(Optional.of(product));
-
-        // Act
         productService.DeleteProduct(product.getProductId());
-
-        // Assert
         verify(productRepository, times(1)).delete(any(Product.class));
         verify(imageServiceInCloud, times(1)).deleteImage(anyString());
     }
 
     @Test
     void testGetSingleProduct() {
-        // Arrange
         when(productRepository.findById(anyString())).thenReturn(Optional.of(product));
         when(mapper.map(any(Product.class), eq(ProductDTO.class))).thenReturn(productDTO);
-
-        // Act
         ProductDTO result = productService.getSingleProduct(product.getProductId());
-
-        // Assert
         assertNotNull(result);
         assertEquals(productDTO.getProductId(), result.getProductId());
         verify(productRepository, times(1)).findById(anyString());
@@ -103,15 +88,10 @@ class ProductServiceTest {
 
     @Test
     void testUpdateProduct() {
-        // Arrange
         when(productRepository.findById(anyString())).thenReturn(Optional.of(product));
         when(productRepository.save(any(Product.class))).thenReturn(product);
         when(mapper.map(any(Product.class), eq(ProductDTO.class))).thenReturn(productDTO);
-
-        // Act
         ProductDTO updatedProduct = productService.updateProduct(productDTO, product.getProductId());
-
-        // Assert
         assertNotNull(updatedProduct);
         assertEquals(productDTO.getTitle(), updatedProduct.getTitle());
         verify(productRepository, times(1)).findById(anyString());

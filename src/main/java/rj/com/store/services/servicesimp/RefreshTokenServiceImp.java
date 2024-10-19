@@ -1,7 +1,6 @@
 package rj.com.store.services.servicesimp;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rj.com.store.datatransferobjects.RefreshTokenDTO;
 import rj.com.store.datatransferobjects.UserDTO;
@@ -13,6 +12,7 @@ import rj.com.store.repositories.UserRepositories;
 import rj.com.store.services.RefreshTokenService;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -37,6 +37,7 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
                                   ModelMapper modelMapper) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.userRepositories = userRepositories;
+        this.modelMapper=modelMapper;
 
     }
 
@@ -53,16 +54,16 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         RefreshToken refreshToken = refreshTokenRepository.findByUser(user).orElse(null);
-
+        Instant now = Instant.now().plusSeconds(30 * 24 * 3600);
         if (refreshToken == null) {
             refreshToken = RefreshToken.builder()
                     .user(user)
-                    .token(UUID.randomUUID().toString())
-                    .expiresDate(Instant.now().plusSeconds(30 * 24 * 60 * 60)) // Token valid for 30 days
+                    .refreshTokenHold(UUID.randomUUID().toString())
+                    .expiresDate(now) // Token valid for 30 days
                     .build();
         } else {
-            refreshToken.setToken(UUID.randomUUID().toString());
-            refreshToken.setExpiresDate(Instant.now().plusSeconds(30 * 24 * 60 * 60)); // Reset expiration
+            refreshToken.setRefreshTokenHold(UUID.randomUUID().toString());
+            refreshToken.setExpiresDate(now); // Reset expiration
         }
 
         RefreshToken savedRefreshToken = refreshTokenRepository.save(refreshToken);
@@ -77,7 +78,7 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
      */
     @Override
     public RefreshTokenDTO findByToken(String token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
+        RefreshToken refreshToken = refreshTokenRepository.findByRefreshTokenHold(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Refresh Token not found"));
         return modelMapper.map(refreshToken, RefreshTokenDTO.class);
     }
@@ -110,7 +111,7 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
      */
     @Override
     public UserDTO getUserByToken(RefreshTokenDTO token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token.getToken())
+        RefreshToken refreshToken = refreshTokenRepository.findByRefreshTokenHold(token.getRefreshTokenHold())
                 .orElseThrow(() -> new ResourceNotFoundException("Refresh Token not found"));
 
         User user = refreshToken.getUser();

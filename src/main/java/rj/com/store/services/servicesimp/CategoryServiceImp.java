@@ -57,7 +57,7 @@ public class CategoryServiceImp implements CategoryService {
 
     @Value("${category.cover.image.path}")
     String imageUploadPath;
-
+    private static final String CATEGORY_NOT_FOUND="Category Not found exception.";
 
     /**
      * Creates a new category based on the CategoryDTO object.
@@ -86,7 +86,7 @@ public class CategoryServiceImp implements CategoryService {
      */
     @Override
     public CategoryDTO updateCategory(CategoryDTO categoryDTO,String categoryId) {
-      Category category= categoryRepository.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category Not found exception."));
+      Category category= categoryRepository.findById(categoryId).orElseThrow(()->new ResourceNotFoundException(CATEGORY_NOT_FOUND));
       category.setTitle(categoryDTO.getTitle());
       if (category.getCoverImage().equalsIgnoreCase(categoryDTO.getCoverImage())){
           category.setCoverImage(categoryDTO.getCoverImage());
@@ -108,7 +108,7 @@ public class CategoryServiceImp implements CategoryService {
      */
     @Override
     public void deleteCategory(String categoryId) {
-        Category category= categoryRepository.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category Not found exception."));
+        Category category= categoryRepository.findById(categoryId).orElseThrow(()->new ResourceNotFoundException(CATEGORY_NOT_FOUND));
         imageServiceInCloud.deleteImage(category.getCoverImage());
         categoryRepository.delete(category);
     }
@@ -143,7 +143,7 @@ public class CategoryServiceImp implements CategoryService {
      */
     @Override
     public CategoryDTO getCategoryById(String id) {
-        Category category= categoryRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Category Not found exception."));
+        Category category= categoryRepository.findById(id).orElseThrow(()->new ResourceNotFoundException(CATEGORY_NOT_FOUND));
 
         String fullPath=imageUploadPath+category.getCoverImage();
         try {

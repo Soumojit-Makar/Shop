@@ -57,24 +57,18 @@ class CategoryServiceImpTest {
     }
 
     @Test
-    void createCategory_Success() {
-        // Arrange
+    void createCategorySuccess() {
         when(modelMapper.map(any(CategoryDTO.class), eq(Category.class))).thenReturn(category);
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
         when(modelMapper.map(any(Category.class), eq(CategoryDTO.class))).thenReturn(categoryDTO);
-
-        // Act
         CategoryDTO createdCategory = categoryServiceImp.createCategory(categoryDTO);
-
-        // Assert
         assertNotNull(createdCategory);
         assertEquals("Electronics", createdCategory.getTitle());
         verify(categoryRepository, times(1)).save(any(Category.class));
     }
 
     @Test
-    void updateCategory_Success() {
-        // Arrange
+    void updateCategorySuccess() {
         String categoryId = "some-category-id";
 
         Category category = new Category();
@@ -88,27 +82,15 @@ class CategoryServiceImpTest {
         categoryDTO.setTitle("Updated Title");
         categoryDTO.setCoverImage("updated-cover.jpg");
         categoryDTO.setDescription("Updated description");
-
-        // Mock findById to return a valid category
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-
-        // Mock ModelMapper for mapping between DTOs and entities
         when(modelMapper.map(any(CategoryDTO.class), eq(Category.class))).thenReturn(category);
         when(modelMapper.map(any(Category.class), eq(CategoryDTO.class))).thenReturn(categoryDTO);
-
-        // Mock save to return the updated category
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
-
-        // Act
         CategoryDTO updatedCategory = categoryServiceImp.updateCategory(categoryDTO, categoryId);
-
-        // Assert
-        assertNotNull(updatedCategory);  // Ensure the result is not null
-        assertEquals("Updated Title", updatedCategory.getTitle());  // Ensure title is updated
-        assertEquals("updated-cover.jpg", updatedCategory.getCoverImage());  // Check cover image
-        assertEquals("Updated description", updatedCategory.getDescription());  // Check description
-
-        // Verify that the repository save method was called
+        assertNotNull(updatedCategory);
+        assertEquals("Updated Title", updatedCategory.getTitle());
+        assertEquals("updated-cover.jpg", updatedCategory.getCoverImage());
+        assertEquals("Updated description", updatedCategory.getDescription());
         verify(categoryRepository, times(1)).save(any(Category.class));
     }
 
@@ -116,12 +98,9 @@ class CategoryServiceImpTest {
 
 
     @Test
-    void updateCategory_NotFound() {
-        // Arrange
+    void updateCategoryNotFound() {
         String categoryId = category.getCategoryId();
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
-
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> {
             categoryServiceImp.updateCategory(categoryDTO, categoryId);
         });
@@ -129,26 +108,18 @@ class CategoryServiceImpTest {
     }
 
     @Test
-    void deleteCategory_Success() {
-        // Arrange
+    void deleteCategorySuccess() {
         String categoryId = category.getCategoryId();
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-
-        // Act
         categoryServiceImp.deleteCategory(categoryId);
-
-        // Assert
         verify(categoryRepository, times(1)).delete(any(Category.class));
         verify(imageServiceInCloud, times(1)).deleteImage(anyString());
     }
 
     @Test
-    void deleteCategory_NotFound() {
-        // Arrange
+    void deleteCategoryNotFound() {
         String categoryId = category.getCategoryId();
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
-
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> {
             categoryServiceImp.deleteCategory(categoryId);
         });
@@ -157,28 +128,20 @@ class CategoryServiceImpTest {
     }
 
     @Test
-    void getCategoryById_Success() {
-        // Arrange
+    void getCategoryByIdSuccess() {
         String categoryId = category.getCategoryId();
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
         when(modelMapper.map(any(Category.class), eq(CategoryDTO.class))).thenReturn(categoryDTO);
-
-        // Act
         CategoryDTO foundCategory = categoryServiceImp.getCategoryById(categoryId);
-
-        // Assert
         assertNotNull(foundCategory);
         assertEquals("Electronics", foundCategory.getTitle());
         verify(categoryRepository, times(1)).findById(categoryId);
     }
 
     @Test
-    void getCategoryById_NotFound() {
-        // Arrange
+    void getCategoryByIdNotFound() {
         String categoryId = category.getCategoryId();
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
-
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> {
             categoryServiceImp.getCategoryById(categoryId);
         });

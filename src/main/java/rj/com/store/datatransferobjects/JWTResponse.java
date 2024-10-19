@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class JWTResponse
 {
-    private String token;
+    private String jwtToken;
     private UserDTO user;
     private RefreshTokenDTO refreshToken;
 }
