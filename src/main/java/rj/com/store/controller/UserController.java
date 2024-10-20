@@ -13,10 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import rj.com.store.datatransferobjects.ApiResponseMessage;
-import rj.com.store.datatransferobjects.ImageResponse;
-import rj.com.store.datatransferobjects.PageableResponse;
-import rj.com.store.datatransferobjects.UserDTO;
+import rj.com.store.datatransferobjects.*;
 import rj.com.store.enities.Providers;
 import rj.com.store.helper.AppCon;
 import rj.com.store.services.FileService;
@@ -64,8 +61,17 @@ public class UserController {
     @PutMapping("/{userId}")
     @Operation(summary = "update user")
     public ResponseEntity<UserDTO> updateUser(
-            @Valid @RequestBody UserDTO userDTO,
+            @Valid @RequestBody UpdateUserDTO updateUserDTO,
             @PathVariable("userId") String userId) {
+        UserDTO userDTO=UserDTO.builder()
+                .about(updateUserDTO.getAbout())
+                .roles(updateUserDTO.getRoles())
+                .name(updateUserDTO.getName())
+                .gender(updateUserDTO.getGender())
+                .userId(userId)
+                .password(updateUserDTO.getPassword())
+                .imageName(updateUserDTO.getImageName())
+                .build();
         return new ResponseEntity<>(userService.UpdateUser(userDTO, userId), HttpStatus.OK);
     }
     /**

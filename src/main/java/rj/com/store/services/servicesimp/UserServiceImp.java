@@ -110,15 +110,23 @@ public class UserServiceImp implements UserService {
         user.setAbout(userDTO.getAbout());
 
         // Handle image update logic
-        if (!user.getImageName().equalsIgnoreCase(userDTO.getImageName()) && userDTO.getImageName() != null) {
-            imageServiceInCloud.deleteImage(user.getImageName());
-            user.setImageName(userDTO.getImageName());
+        if ( userDTO.getImageName() != null) {
+            if (user.getImageName()==null ){
+                user.setImageName(userDTO.getImageName());
+            }
+            else if(!user.getImageName().equals(userDTO.getImageName())){
+                imageServiceInCloud.deleteImage(user.getImageName());
+                user.setImageName(userDTO.getImageName());
+            }
+
         }
 
         // Handle password update logic
-        if (!userDTO.getPassword().equals(user.getPassword()) && userDTO.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        }
+
+            if(!userDTO.getPassword().equalsIgnoreCase(user.getPassword()) ){
+                user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            }
+
 
         // Save the updated user in the repository
         User updatedUser = userRepositories.save(user);

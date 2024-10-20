@@ -86,12 +86,14 @@ public class ImageServiceInCloudImp implements ImageServiceInCloud {
      */
     @Override
     public String deleteImage(String publicId) {
+        logger.info("File name {}", publicId);
         if (publicId.isEmpty() || publicId.equalsIgnoreCase(" ")) {
             return "Ok";
         }
-        try {
-            String im = publicId.substring(publicId.lastIndexOf("/") + 1, publicId.lastIndexOf("."));
+
+            String im = publicId.substring(publicId.lastIndexOf("/") + 1);
             logger.info("Delete file public id {}", im);
+        try {
             cloudinary.uploader().destroy(im, ObjectUtils.asMap(
                     "public_id", im
             ));
